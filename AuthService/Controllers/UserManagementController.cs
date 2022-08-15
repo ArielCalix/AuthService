@@ -1,4 +1,5 @@
 ﻿using AuthService.Context;
+using AuthService.Helpers;
 using AuthService.Models;
 using AuthService.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -144,7 +145,7 @@ namespace AuthService.Controllers
                     if (isUser)
                     {
 
-                        string data = $"{employed.Email},{employed.EncryptedPass}";
+                        string data = $"{employed.Email},{employed.FirstName} {employed.LastName},{DateTime.Now.AddDays(15)}";
                         Byte[] dataBytes = Encoding.UTF8.GetBytes(data);
                         token = Convert.ToBase64String(dataBytes);
                         token = Regex.Replace(token, ' '.ToString(), string.Empty).Trim();
@@ -154,6 +155,21 @@ namespace AuthService.Controllers
                 }
                 else { return BadRequest(); }
             }
+        }
+        [HttpPost("create-user")]
+        public object CrearUsuario(Employed employed [Required][FromHeader] string apiKey, [Required][FromHeader] string authorization)
+        {
+            try
+            {
+                if (!ValidationHelper.TokenValidate(apiKey))
+                {
+                    return Unauthorized();
+                }
+            } catch(Exception ex)
+            {
+
+            }
+            throw new NotImplementedException();
         }
     }
 }
